@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "me.duncanruns.remembermytxt.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+  ],
+  "client": [
+    "GameOptionsMixin"],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
