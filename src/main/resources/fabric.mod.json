@@ -9,7 +9,9 @@
   ],
   "accessWidener": "remember-my-txt.accesswidener",
   "contributors": [],
-  "contact": {},
+  "contact": {
+    "issues": "https://github.com/DuncanRuns/RememberMyTxt/issues"
+  },
   "license": "MIT",
   "icon": "assets/remember-my-txt/icon.png",
   "environment": "client",
