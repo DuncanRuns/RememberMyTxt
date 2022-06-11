@@ -1,3 +1,7 @@
+
+## How options.txt works
+To understand how the mod works, we first need to understand the behaviour of the options.txt file and how Minecraft handles it.
+
 ### options.txt format
 Here is what a portion of what a typical options.txt could look like:
 ```
