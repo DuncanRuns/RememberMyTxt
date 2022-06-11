@@ -1,3 +1,4 @@
+[Minecraft Wiki Page](https://minecraft.fandom.com/wiki/Options.txt)
 
 ## How options.txt works
 To understand how the mod works, we first need to understand the behaviour of the options.txt file and how Minecraft handles it.
