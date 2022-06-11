@@ -3,7 +3,7 @@
   "id": "remember-my-txt",
   "version": "${version}",
   "name": "Remember My Txt",
-  "description": "Remember My Txt makes sure unrecognized values in the options.txt file get saved when changing other options, preventing Things like losing keybinds when you are waiting for a mod to port to a newer version of Minecraft.",
+  "description": "Remember My Txt makes sure unrecognized values in the options.txt file get saved when changing other options, preventing things like losing keybinds when you are waiting for a mod to port to a newer version of Minecraft.",
   "authors": [
     "DuncanRuns"
   ],
