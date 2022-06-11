@@ -2,7 +2,6 @@ package me.duncanruns.remembermytxt.mixin;
 
 import me.duncanruns.remembermytxt.RememberMyTxt;
 import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.option.SimpleOption;
 import net.minecraft.nbt.NbtCompound;
 import org.apache.logging.log4j.Level;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,6 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.IntFunction;
+import java.util.function.ToIntFunction;
 
 @Mixin(GameOptions.class)
 public abstract class GameOptionsMixin {
@@ -36,11 +37,6 @@ public abstract class GameOptionsMixin {
         Set<String> unacceptedKeys = this.loadedData.getKeys();
         this.accept(new GameOptions.Visitor() {
             @Override
-            public <T> void accept(String key, SimpleOption<T> option) {
-                unacceptedKeys.remove(key);
-            }
-
-            @Override
             public int visitInt(String key, int current) {
                 unacceptedKeys.remove(key);
                 return current;
@@ -59,6 +55,12 @@ public abstract class GameOptionsMixin {
             }
 
             @Override
+            public double visitDouble(String key, double current) {
+                unacceptedKeys.remove(key);
+                return current;
+            }
+
+            @Override
             public float visitFloat(String key, float current) {
                 unacceptedKeys.remove(key);
                 return current;
@@ -66,6 +68,12 @@ public abstract class GameOptionsMixin {
 
             @Override
             public <T> T visitObject(String key, T current, Function<String, T> decoder, Function<T, String> encoder) {
+                unacceptedKeys.remove(key);
+                return current;
+            }
+
+            @Override
+            public <T> T visitObject(String key, T current, IntFunction<T> decoder, ToIntFunction<T> encoder) {
                 unacceptedKeys.remove(key);
                 return current;
             }
@@ -84,7 +92,7 @@ public abstract class GameOptionsMixin {
         // This probably means that they will be written a second time later in the file, and for duplicate keys, the
         // lowest one in the file is the one which will be loaded.
         for (Map.Entry<String, String> entry : unacceptedOptions.entrySet()) {
-            printWriter.println(entry.getKey()+":"+entry.getValue());
+            printWriter.println(entry.getKey() + ":" + entry.getValue());
         }
     }
 }
