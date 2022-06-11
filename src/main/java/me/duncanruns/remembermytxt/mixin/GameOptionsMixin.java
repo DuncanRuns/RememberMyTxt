@@ -84,7 +84,7 @@ public abstract class GameOptionsMixin {
         // This probably means that they will be written a second time later in the file, and for duplicate keys, the
         // lowest one in the file is the one which will be loaded.
         for (Map.Entry<String, String> entry : unacceptedOptions.entrySet()) {
-            printWriter.println(entry.getKey()+":"+entry.getValue());
+            printWriter.println(entry.getKey() + ":" + entry.getValue());
         }
     }
 }
