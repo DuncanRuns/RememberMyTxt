@@ -20,14 +20,14 @@ import java.util.function.Function;
 
 @Mixin(GameOptions.class)
 public abstract class GameOptionsMixin {
-    @Shadow
-    protected abstract void accept(GameOptions.Visitor visitor);
-
     private NbtCompound loadedData;
     private Map<String, String> unacceptedOptions;
 
-    @Inject(method = "load", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/GameOptions;update(Lnet/minecraft/nbt/NbtCompound;)Lnet/minecraft/nbt/NbtCompound;", shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILSOFT)
-    private void getKeysMixin(CallbackInfo info, NbtCompound nbtCompound2) {
+    @Shadow
+    protected abstract void accept(GameOptions.Visitor visitor);
+
+    @Inject(method = "load", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/GameOptions;accept(Lnet/minecraft/client/option/GameOptions$Visitor;)V", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILHARD)
+    private void getKeysMixin(CallbackInfo ci, NbtCompound nbtCompound, final NbtCompound nbtCompound2) {
         loadedData = nbtCompound2;
     }
 
