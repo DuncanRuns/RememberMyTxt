@@ -7,9 +7,11 @@ import net.minecraft.nbt.NbtCompound;
 import org.apache.logging.log4j.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.io.PrintWriter;
@@ -20,15 +22,17 @@ import java.util.function.Function;
 
 @Mixin(GameOptions.class)
 public abstract class GameOptionsMixin {
+    @Unique
     private NbtCompound loadedData;
+    @Unique
     private Map<String, String> unacceptedOptions;
 
     @Shadow
     protected abstract void accept(GameOptions.Visitor visitor);
 
-    @Inject(method = "load", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/GameOptions;accept(Lnet/minecraft/client/option/GameOptions$Visitor;)V", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void getKeysMixin(CallbackInfo ci, NbtCompound nbtCompound, final NbtCompound nbtCompound2) {
-        loadedData = nbtCompound2;
+    @Inject(method = "update", at = @At("RETURN"))
+    private void storeLoadedData(NbtCompound nbt, CallbackInfoReturnable<NbtCompound> cir) {
+        loadedData = cir.getReturnValue();
     }
 
     @Inject(method = "load", at = @At("TAIL"))
