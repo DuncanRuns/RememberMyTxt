@@ -25,7 +25,7 @@ public abstract class GameOptionsMixin {
     @Unique
     private NbtCompound loadedData;
     @Unique
-    private Map<String, String> unacceptedOptions;
+    private Map<String, String> unacceptedOptions = null;
 
     @Shadow
     protected abstract void accept(GameOptions.Visitor visitor);
@@ -84,6 +84,7 @@ public abstract class GameOptionsMixin {
 
     @Inject(method = "write", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/GameOptions;accept(Lnet/minecraft/client/option/GameOptions$Visitor;)V", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void writeUnacceptedMixin(CallbackInfo info, PrintWriter printWriter) {
+        if (unacceptedOptions == null) return;
         // Unaccepted variables will be placed at the top in case they weren't accepted by the visitor during reading.
         // This probably means that they will be written a second time later in the file, and for duplicate keys, the
         // lowest one in the file is the one which will be loaded.
