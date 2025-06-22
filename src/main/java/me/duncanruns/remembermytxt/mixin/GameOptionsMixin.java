@@ -85,7 +85,7 @@ public abstract class GameOptionsMixin {
         }
     }
 
-    @Inject(method = "write", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/GameOptions;accept(Lnet/minecraft/client/option/GameOptions$Visitor;)V", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILSOFT)
+    @Inject(method = "write", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/GameOptions;accept(Lnet/minecraft/client/option/GameOptions$Visitor;)V"), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void writeUnacceptedMixin(CallbackInfo info, PrintWriter printWriter) {
         if (unacceptedOptions == null) return;
         // Unaccepted variables will be placed at the top in case they weren't accepted by the visitor during reading.
