@@ -1,10 +1,11 @@
 package me.duncanruns.remembermytxt.mixin;
 
 import me.duncanruns.remembermytxt.RememberMyTxt;
-import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.option.SimpleOption;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.client.OptionInstance;
+import net.minecraft.client.Options;
+import net.minecraft.nbt.CompoundTag;
 import org.apache.logging.log4j.Level;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -21,56 +22,56 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
-@Mixin(GameOptions.class)
-public abstract class GameOptionsMixin {
+@Mixin(Options.class)
+public abstract class OptionsMixin {
     @Unique
-    private NbtCompound loadedData;
+    private CompoundTag loadedData;
     @Unique
     private Map<String, String> unacceptedOptions = null;
 
     @Shadow
-    protected abstract void accept(GameOptions.Visitor visitor);
+    protected abstract void processOptions(Options.FieldAccess access);
 
-    @Inject(method = "update", at = @At("RETURN"))
-    private void storeLoadedData(NbtCompound nbt, CallbackInfoReturnable<NbtCompound> cir) {
+    @Inject(method = "dataFix", at = @At("RETURN"))
+    private void storeLoadedData(CompoundTag tag, CallbackInfoReturnable<CompoundTag> cir) {
         loadedData = cir.getReturnValue();
     }
 
     @Inject(method = "load", at = @At("TAIL"))
     private void endLoadMixin(CallbackInfo info) {
-        Set<String> unacceptedKeys = new HashSet<>(this.loadedData.getKeys());
-        this.accept(new GameOptions.Visitor() {
+        Set<String> unacceptedKeys = new HashSet<>(this.loadedData.keySet());
+        this.processOptions(new Options.FieldAccess() {
             @Override
-            public <T> void accept(String key, SimpleOption<T> option) {
+            public <T> void process(@NonNull String key, @NonNull OptionInstance<T> option) {
                 unacceptedKeys.remove(key);
             }
 
             @Override
-            public int visitInt(String key, int current) {
-                unacceptedKeys.remove(key);
-                return current;
-            }
-
-            @Override
-            public boolean visitBoolean(String key, boolean current) {
+            public int process(@NonNull String key, int current) {
                 unacceptedKeys.remove(key);
                 return current;
             }
 
             @Override
-            public String visitString(String key, String current) {
+            public boolean process(@NonNull String key, boolean current) {
                 unacceptedKeys.remove(key);
                 return current;
             }
 
             @Override
-            public float visitFloat(String key, float current) {
+            public @NonNull String process(@NonNull String key, @NonNull String current) {
                 unacceptedKeys.remove(key);
                 return current;
             }
 
             @Override
-            public <T> T visitObject(String key, T current, Function<String, T> decoder, Function<T, String> encoder) {
+            public float process(@NonNull String key, float current) {
+                unacceptedKeys.remove(key);
+                return current;
+            }
+
+            @Override
+            public <T> @NonNull T process(@NonNull String key, @NonNull T current, @NonNull Function<String, T> decoder, @NonNull Function<T, String> encoder) {
                 unacceptedKeys.remove(key);
                 return current;
             }
@@ -85,7 +86,7 @@ public abstract class GameOptionsMixin {
         }
     }
 
-    @Inject(method = "write", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/GameOptions;accept(Lnet/minecraft/client/option/GameOptions$Visitor;)V"), locals = LocalCapture.CAPTURE_FAILSOFT)
+    @Inject(method = "save", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Options;processOptions(Lnet/minecraft/client/Options$FieldAccess;)V"), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void writeUnacceptedMixin(CallbackInfo info, PrintWriter printWriter) {
         if (unacceptedOptions == null) return;
         // Unaccepted variables will be placed at the top in case they weren't accepted by the visitor during reading.
