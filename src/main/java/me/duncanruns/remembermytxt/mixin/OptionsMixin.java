@@ -1,5 +1,6 @@
 package me.duncanruns.remembermytxt.mixin;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import me.duncanruns.remembermytxt.RememberMyTxt;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.Options;
@@ -12,7 +13,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -86,14 +86,14 @@ public abstract class OptionsMixin {
         }
     }
 
-    @Inject(method = "save", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Options;processOptions(Lnet/minecraft/client/Options$FieldAccess;)V"), locals = LocalCapture.CAPTURE_FAILSOFT)
-    private void writeUnacceptedMixin(CallbackInfo info, PrintWriter printWriter) {
+    @Inject(method = "save", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Options;processOptions(Lnet/minecraft/client/Options$FieldAccess;)V"))
+    private void writeUnacceptedMixin(CallbackInfo info, @Local(name = "writer") PrintWriter writer) {
         if (unacceptedOptions == null) return;
         // Unaccepted variables will be placed at the top in case they weren't accepted by the visitor during reading.
         // This probably means that they will be written a second time later in the file, and for duplicate keys, the
         // lowest one in the file is the one which will be loaded.
         for (Map.Entry<String, String> entry : unacceptedOptions.entrySet()) {
-            printWriter.println(entry.getKey() + ":" + entry.getValue());
+            writer.println(entry.getKey() + ":" + entry.getValue());
         }
     }
 }
