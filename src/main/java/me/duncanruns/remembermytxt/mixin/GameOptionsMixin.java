@@ -79,7 +79,7 @@ public abstract class GameOptionsMixin {
         unacceptedKeys.remove("version");
         unacceptedOptions = new HashMap<>();
         for (String key : unacceptedKeys) {
-            RememberMyTxt.log(Level.INFO, "Unaccepted Key: \"" + key + "\" with value: " + loadedData.get(key));
+            RememberMyTxt.LOGGER.info("[Remember My Txt] Unaccepted Key: \"{}\" with value: {}", key, loadedData.get(key));
             unacceptedOptions.put(key, loadedData.getString(key));
         }
     }
