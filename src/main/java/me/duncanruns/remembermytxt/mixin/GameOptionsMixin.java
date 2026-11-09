@@ -78,7 +78,7 @@ public abstract class GameOptionsMixin {
         });
         unacceptedKeys.remove("version");
         unacceptedOptions = new HashMap<>();
-        for (String key : unacceptedKeys.toArray(new String[0])) {
+        for (String key : unacceptedKeys) {
             loadedData.getString(key).ifPresent(s -> {
                 RememberMyTxt.log(Level.INFO, "Unaccepted Key: \"" + key + "\" with value: " + loadedData.get(key));
                 unacceptedOptions.put(key, s);
