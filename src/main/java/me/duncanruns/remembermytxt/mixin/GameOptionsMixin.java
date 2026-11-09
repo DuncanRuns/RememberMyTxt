@@ -37,6 +37,7 @@ public abstract class GameOptionsMixin {
 
     @Inject(method = "load", at = @At("TAIL"))
     private void endLoadMixin(CallbackInfo info) {
+        if (this.loadedData == null) return;
         Set<String> unacceptedKeys = this.loadedData.getKeys();
         this.accept(new GameOptions.Visitor() {
             @Override
