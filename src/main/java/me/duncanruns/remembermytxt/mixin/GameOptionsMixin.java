@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -38,7 +39,7 @@ public abstract class GameOptionsMixin {
     @Inject(method = "load", at = @At("TAIL"))
     private void endLoadMixin(CallbackInfo info) {
         if (this.loadedData == null) return;
-        Set<String> unacceptedKeys = this.loadedData.getKeys();
+        Set<String> unacceptedKeys = new HashSet<>(this.loadedData.getKeys());
         this.accept(new GameOptions.Visitor() {
             @Override
             public <T> void accept(String key, SimpleOption<T> option) {
@@ -77,7 +78,7 @@ public abstract class GameOptionsMixin {
         });
         unacceptedKeys.remove("version");
         unacceptedOptions = new HashMap<>();
-        for (String key : unacceptedKeys.toArray(new String[0])) {
+        for (String key : unacceptedKeys) {
             RememberMyTxt.log(Level.INFO, "Unaccepted Key: \"" + key + "\" with value: " + loadedData.get(key));
             unacceptedOptions.put(key, loadedData.getString(key));
         }
