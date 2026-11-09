@@ -1,5 +1,6 @@
 package me.duncanruns.remembermytxt.mixin;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import me.duncanruns.remembermytxt.RememberMyTxt;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.SimpleOption;
@@ -84,8 +85,8 @@ public abstract class GameOptionsMixin {
         }
     }
 
-    @Inject(method = "write", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/GameOptions;accept(Lnet/minecraft/client/option/GameOptions$Visitor;)V"), locals = LocalCapture.CAPTURE_FAILSOFT)
-    private void writeUnacceptedMixin(CallbackInfo info, PrintWriter printWriter) {
+    @Inject(method = "write", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/GameOptions;accept(Lnet/minecraft/client/option/GameOptions$Visitor;)V"))
+    private void writeUnacceptedMixin(CallbackInfo info, @SuppressWarnings("LocalMayUseName") @Local PrintWriter printWriter) {
         if (unacceptedOptions == null) return;
         // Unaccepted variables will be placed at the top in case they weren't accepted by the visitor during reading.
         // This probably means that they will be written a second time later in the file, and for duplicate keys, the
