@@ -39,6 +39,7 @@ public abstract class OptionsMixin {
 
     @Inject(method = "load", at = @At("TAIL"))
     private void endLoadMixin(CallbackInfo info) {
+        if (this.loadedData == null) return;
         Set<String> unacceptedKeys = new HashSet<>(this.loadedData.keySet());
         this.processOptions(new Options.FieldAccess() {
             @Override
