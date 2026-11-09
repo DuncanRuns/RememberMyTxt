@@ -4,7 +4,6 @@ import me.duncanruns.remembermytxt.RememberMyTxt;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.Options;
 import net.minecraft.nbt.CompoundTag;
-import org.apache.logging.log4j.Level;
 import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -81,7 +80,7 @@ public abstract class OptionsMixin {
         unacceptedOptions = new HashMap<>();
         for (String key : unacceptedKeys) {
             loadedData.getString(key).ifPresent(s -> {
-                RememberMyTxt.log(Level.INFO, "Unaccepted Key: \"" + key + "\" with value: " + loadedData.get(key));
+                RememberMyTxt.LOGGER.info("[Remember My Txt] Unaccepted Key: \"{}\" with value: {}", key, loadedData.get(key));
                 unacceptedOptions.put(key, s);
             });
         }
