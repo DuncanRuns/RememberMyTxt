@@ -5,6 +5,7 @@ import me.duncanruns.remembermytxt.RememberMyTxt;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.SimpleOption;
 import net.minecraft.nbt.NbtCompound;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -14,7 +15,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -27,6 +32,10 @@ public abstract class GameOptionsMixin {
     private NbtCompound loadedData;
     @Unique
     private Map<String, String> unacceptedOptions = null;
+
+    @Shadow
+    @Final
+    private File optionsFile;
 
     @Shadow
     protected abstract void accept(GameOptions.Visitor visitor);
@@ -83,6 +92,22 @@ public abstract class GameOptionsMixin {
                 RememberMyTxt.LOGGER.info("[Remember My Txt] Unaccepted Key: \"{}\" with value: {}", key, loadedData.get(key));
                 unacceptedOptions.put(key, s);
             });
+        }
+    }
+
+    @Inject(method = "write", at = @At("HEAD"))
+    private void refreshUnacceptedMixin(CallbackInfo info) {
+        if (unacceptedOptions == null || unacceptedOptions.isEmpty() || !optionsFile.exists()) return;
+        try {
+            for (String line : Files.readAllLines(optionsFile.toPath(), StandardCharsets.UTF_8)) {
+                int split = line.indexOf(':');
+                if (split < 0) continue;
+                String key = line.substring(0, split);
+                if (unacceptedOptions.containsKey(key)) {
+                    unacceptedOptions.put(key, line.substring(split + 1));
+                }
+            }
+        } catch (IOException ignored) {
         }
     }
 
